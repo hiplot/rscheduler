@@ -1,3 +1,3 @@
-callback = function(taskID){
-        httr::GET("http://localhost:8080/completed?taskID=123&taskName=add")
+callback = function(taskID, taskName){
+        httr::GET(paste("http://localhost:8080/completed?taskID=",taskID, "&taskName=", taskName, sep=""))
     }

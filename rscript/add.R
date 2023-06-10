@@ -1,2 +1,2 @@
 cat(add(1, 2))
-callback()
+callback("123", "add")
