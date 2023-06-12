@@ -23,7 +23,9 @@ func (p *procMap) AddTask(t *Task) {
 	if proc == nil {
 		panic("get proc failed")
 	}
-	_, err := proc.Exec("source(\"./rscript/%s.R\")", t.name)
+	var err error
+	_, err = proc.Exec(`taskID = "%s"`, t.id)
+	_, err = proc.Exec(`source("./rscript/%s.R")`, t.name)
 	if err != nil {
 		log.Println(err)
 		return
@@ -46,11 +48,13 @@ func (p *procMap) TaskComplete(taskName, taskID string) {
 func (p *procMap) getProc(t *Task) *Processor {
 	p.lock.Lock()
 	defer p.lock.Unlock()
+
 	if len(p.m[t.name]) == 0 {
 		proc := p.makeNewProc(t.name)
 		proc.task = t
 		return proc
 	}
+
 	for _, proc := range p.m[t.name] {
 		if proc != nil && proc.task == nil {
 			log.Println("Find a idle processor")
@@ -58,6 +62,7 @@ func (p *procMap) getProc(t *Task) *Processor {
 			return proc
 		}
 	}
+
 	// TODO limit processor count
 	proc := p.makeNewProc(t.name)
 	proc.task = t

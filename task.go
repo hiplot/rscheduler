@@ -1,5 +1,7 @@
 package main
 
+import gonanoid "github.com/matoous/go-nanoid/v2"
+
 type Task struct {
 	name string
 	id   string
@@ -8,10 +10,9 @@ type Task struct {
 var DelayTask []*Task // TODO store task
 
 func NewTask(name string) *Task {
-	//id, _ := gonanoid.New()
-	// TODO create id
+	id, _ := gonanoid.New()
 	return &Task{
 		name: name,
-		id:   "123",
+		id:   id,
 	}
 }
