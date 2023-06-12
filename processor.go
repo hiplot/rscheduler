@@ -42,13 +42,14 @@ func newProcess(name string) *Processor {
 		inPipe: &stdinPipe,
 	}
 
-	_, err = proc.Exec("source(\"./rscript/%sInit.R\")", name)
+	_, err = proc.Exec(`source("./rscript/%sInit.R")`, name)
 	if err != nil {
 		log.Println(err)
 	}
 
 	ProcMap.lock.Lock()
 	defer ProcMap.lock.Unlock()
+
 	if _, ok := ProcMap.m[name]; !ok {
 		ProcMap.m[name] = make([]*Processor, 4)
 	}
