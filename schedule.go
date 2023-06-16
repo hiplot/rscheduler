@@ -7,14 +7,14 @@ import (
 
 type procMap struct {
 	lock sync.RWMutex
-	m    map[string][]*Processor
+	m    map[string]*ProcessorList
 }
 
 var ProcMap procMap
 
 func init() {
 	ProcMap = procMap{
-		m: make(map[string][]*Processor),
+		m: make(map[string]*ProcessorList),
 	}
 }
 
@@ -36,8 +36,10 @@ func (p *procMap) TaskComplete(taskName, taskID string) {
 	// TODO collect result
 	p.lock.Lock()
 	defer p.lock.Unlock()
-	for _, proc := range p.m[taskName] {
-		if proc != nil && proc.task != nil && proc.task.id == taskID {
+	pList := p.m[taskName]
+	for i := pList.Back(); i != nil; i = i.Prev() {
+		proc := i.Value.(*Processor)
+		if proc.task != nil && proc.task.id == taskID {
 			log.Println("Task complete success")
 			proc.task = nil
 			return
@@ -48,17 +50,20 @@ func (p *procMap) TaskComplete(taskName, taskID string) {
 func (p *procMap) getProc(t *Task) *Processor {
 	p.lock.Lock()
 	defer p.lock.Unlock()
-
-	if len(p.m[t.name]) == 0 {
+	pList := p.m[t.name]
+	if pList == nil || pList.Len() == 0 {
 		proc := p.makeNewProc(t.name)
 		proc.task = t
 		return proc
 	}
 
-	for _, proc := range p.m[t.name] {
+	for procElement := pList.Front(); procElement != nil; procElement = procElement.Next() {
+		proc := procElement.Value.(*Processor)
 		if proc != nil && proc.task == nil {
 			log.Println("Find a idle processor")
 			proc.task = t
+			// put the procElement to the end of list
+			pList.MoveToBack(procElement)
 			return proc
 		}
 	}

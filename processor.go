@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"io"
 	"log"
@@ -13,6 +14,14 @@ type Processor struct {
 	cmd    *exec.Cmd
 	inPipe *io.WriteCloser
 	task   *Task
+}
+
+type ProcessorList struct {
+	list.List
+}
+
+func newProcessorList() *ProcessorList {
+	return &ProcessorList{list.List{}}
 }
 
 // newProcess
@@ -50,10 +59,11 @@ func newProcess(name string) *Processor {
 	ProcMap.lock.Lock()
 	defer ProcMap.lock.Unlock()
 
-	if _, ok := ProcMap.m[name]; !ok {
-		ProcMap.m[name] = make([]*Processor, 4)
+	if ProcMap.m[name] == nil {
+		ProcMap.m[name] = newProcessorList()
 	}
-	ProcMap.m[name] = append(ProcMap.m[name], proc)
+
+	ProcMap.m[name].PushBack(proc)
 	return proc
 }
 

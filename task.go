@@ -7,7 +7,7 @@ type Task struct {
 	id   string
 }
 
-var DelayTask []*Task // TODO store task
+var DelayTask *ProcessorList // TODO store task
 
 func NewTask(name string) *Task {
 	id, _ := gonanoid.New()
