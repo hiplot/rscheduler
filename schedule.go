@@ -1,20 +1,22 @@
 package main
 
 import (
-	"log"
+	"go.uber.org/zap"
 	"sync"
 )
 
 type procMap struct {
-	lock sync.RWMutex
-	m    map[string]*ProcessorList
+	lock   sync.RWMutex
+	m      map[string]*ProcessorList
+	logger *rsLogger
 }
 
 var ProcMap procMap
 
 func init() {
 	ProcMap = procMap{
-		m: make(map[string]*ProcessorList),
+		m:      make(map[string]*ProcessorList),
+		logger: newGlobalLogger(),
 	}
 }
 
@@ -27,7 +29,7 @@ func (p *procMap) AddTask(t *Task) {
 	_, err = proc.Exec(`taskID = "%s"`, t.id)
 	_, err = proc.Exec(`source("./rscript/%s.R")`, t.name)
 	if err != nil {
-		log.Println(err)
+		p.logger.Errorf("Exec failed: ")
 		return
 	}
 }
@@ -40,7 +42,7 @@ func (p *procMap) TaskComplete(taskName, taskID string) {
 	for i := pList.Back(); i != nil; i = i.Prev() {
 		proc := i.Value.(*Processor)
 		if proc.task != nil && proc.task.id == taskID {
-			log.Println("Task complete success")
+			p.logger.Infow("Task complete success", zap.String("taskName", taskName), zap.String("taskID", taskID))
 			proc.task = nil
 			return
 		}
@@ -60,7 +62,7 @@ func (p *procMap) getProc(t *Task) *Processor {
 	for procElement := pList.Front(); procElement != nil; procElement = procElement.Next() {
 		proc := procElement.Value.(*Processor)
 		if proc != nil && proc.task == nil {
-			log.Println("Find a idle processor")
+			p.logger.Infow("Find a idle processor", zap.String("taskName", t.name), zap.String("taskID", t.id))
 			proc.task = t
 			// put the procElement to the end of list
 			pList.MoveToBack(procElement)
@@ -78,5 +80,5 @@ func (p *procMap) getProc(t *Task) *Processor {
 func (p *procMap) makeNewProc(name string) *Processor {
 	p.lock.Unlock()
 	defer p.lock.Lock()
-	return newProcess(name)
+	return newProcessor(name)
 }
