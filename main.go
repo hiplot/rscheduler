@@ -29,6 +29,15 @@ func TaskCompleteHandler(c *gin.Context) {
 func NewTaskHandler(c *gin.Context) {
 	taskName := c.Query("taskName")
 	task := NewTask(taskName)
+
+	if !enableNewTask() {
+		c.JSON(http.StatusOK, gin.H{
+			"status": FailedResponseCode,
+			"msg":    "limit",
+		})
+		return
+	}
+
 	err := ProcMap.AddTask(task)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
