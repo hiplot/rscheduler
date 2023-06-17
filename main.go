@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/liang09255/lutils/conv"
+	"net/http"
 )
 
 func main() {
@@ -12,17 +13,32 @@ func main() {
 	_ = g.Run(":8080")
 }
 
+const (
+	FailedResponseCode  = 0
+	SuccessResponseCode = 1
+)
+
 func TaskCompleteHandler(c *gin.Context) {
 	taskName := c.Query("taskName")
 	taskID := c.Query("taskID")
 	kill := conv.ToBool(c.Query("kill"))
 	ProcMap.TaskComplete(taskName, taskID, kill)
-	c.JSON(200, "Success")
-	return
+	c.JSON(http.StatusOK, "Success")
 }
 
 func NewTaskHandler(c *gin.Context) {
 	taskName := c.Query("taskName")
 	task := NewTask(taskName)
-	ProcMap.AddTask(task)
+	err := ProcMap.AddTask(task)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": FailedResponseCode,
+			"msg":    err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": SuccessResponseCode,
+		"msg":    "",
+	})
 }
