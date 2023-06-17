@@ -11,7 +11,6 @@ import (
 const (
 	SEP          = string(filepath.Separator)
 	ProcessorLog = "processor"
-	TaskLog      = "task"
 	GlobalLog    = "global"
 )
 
@@ -22,10 +21,6 @@ type rsLogger struct {
 
 func newProcLogger(name, id string) *rsLogger {
 	return newLogger(ProcessorLog, name, id)
-}
-
-func newTaskLogger(name, id string) *rsLogger {
-	return newLogger(TaskLog, name, id)
 }
 
 func newGlobalLogger() *rsLogger {

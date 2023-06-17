@@ -5,7 +5,6 @@ import (
 	"fmt"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"io"
-	"log"
 	"os/exec"
 )
 
@@ -31,12 +30,12 @@ func newProcList() *ProcList {
 // Auto load nameFunc.R
 // In this file, we can write some init code
 func newProc(name string) *Proc {
-	log.Println("Create new process")
+	Logger.Info("Create new processor")
 	cmd := exec.Command("R", "--vanilla")
 
 	stdinPipe, err := cmd.StdinPipe()
 	if err != nil {
-		log.Println("get stdinPipe failed, err:", err)
+		Logger.Error("get stdinPipe failed, err:", err)
 		return nil
 	}
 
@@ -48,7 +47,7 @@ func newProc(name string) *Proc {
 
 	err = cmd.Start()
 	if err != nil {
-		log.Println("start cmd failed, err:", err)
+		Logger.Error("start cmd failed, err:", err)
 		return nil
 	}
 
@@ -62,7 +61,9 @@ func newProc(name string) *Proc {
 
 	_, err = proc.Exec(`source("./rscript/%sInit.R")`, name)
 	if err != nil {
-		log.Println(err)
+		Logger.Error("Exec failed, err: ", err)
+		_ = proc.ForceClose()
+		return nil
 	}
 
 	ProcMap.lock.Lock()
@@ -81,8 +82,8 @@ func (p *Proc) ForceClose() error {
 	return p.cmd.Process.Kill()
 }
 
-// QuitR This method will wait for the current task to complete before exiting
-func (p *Proc) QuitR() error {
+// Close This method will wait for the current task to complete before exiting
+func (p *Proc) Close() error {
 	_, err := p.Exec("q()")
 	return err
 }

@@ -6,18 +6,8 @@ import (
 )
 
 type procMap struct {
-	lock   sync.RWMutex
-	m      map[string]*ProcList
-	logger *rsLogger
-}
-
-var ProcMap procMap
-
-func init() {
-	ProcMap = procMap{
-		m:      make(map[string]*ProcList),
-		logger: newGlobalLogger(),
-	}
+	lock sync.RWMutex
+	m    map[string]*ProcList
 }
 
 func (pm *procMap) AddTask(t *Task) {
@@ -29,12 +19,12 @@ func (pm *procMap) AddTask(t *Task) {
 	_, err = proc.Exec(`taskID = "%s"`, t.id)
 	_, err = proc.Exec(`source("./rscript/%s.R")`, t.name)
 	if err != nil {
-		pm.logger.Errorf("Exec failed: ")
+		Logger.Error("Exec failed, err: ", err)
 		return
 	}
 }
 
-func (pm *procMap) TaskComplete(taskName, taskID string) {
+func (pm *procMap) TaskComplete(taskName, taskID string, kill bool) {
 	// TODO collect result
 	pm.lock.Lock()
 	defer pm.lock.Unlock()
@@ -42,8 +32,12 @@ func (pm *procMap) TaskComplete(taskName, taskID string) {
 	for i := pList.Back(); i != nil; i = i.Prev() {
 		proc := i.Value.(*Proc)
 		if proc.task != nil && proc.task.id == taskID {
-			pm.logger.Infow("Task complete success", zap.String("taskName", taskName), zap.String("taskID", taskID))
+			Logger.Infow("Task complete success", zap.String("taskName", taskName), zap.String("taskID", taskID))
 			proc.task = nil
+			if kill {
+				_ = proc.Close()
+				pList.Remove(i)
+			}
 			return
 		}
 	}
@@ -62,7 +56,7 @@ func (pm *procMap) getProc(t *Task) *Proc {
 	for procElement := pList.Front(); procElement != nil; procElement = procElement.Next() {
 		proc := procElement.Value.(*Proc)
 		if proc != nil && proc.task == nil {
-			pm.logger.Infow("Find a idle processor", zap.String("taskName", t.name), zap.String("taskID", t.id))
+			Logger.Infow("Find a idle processor", zap.String("taskName", t.name), zap.String("taskID", t.id))
 			proc.task = t
 			// put the procElement to the end of list
 			pList.MoveToBack(procElement)

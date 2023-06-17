@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/liang09255/lutils/conv"
 )
 
 func main() {
@@ -14,7 +15,8 @@ func main() {
 func TaskCompleteHandler(c *gin.Context) {
 	taskName := c.Query("taskName")
 	taskID := c.Query("taskID")
-	ProcMap.TaskComplete(taskName, taskID)
+	kill := conv.ToBool(c.Query("kill"))
+	ProcMap.TaskComplete(taskName, taskID, kill)
 	c.JSON(200, "Success")
 	return
 }
