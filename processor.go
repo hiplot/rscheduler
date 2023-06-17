@@ -9,7 +9,7 @@ import (
 	"os/exec"
 )
 
-type Processor struct {
+type Proc struct {
 	id     string
 	name   string
 	cmd    *exec.Cmd
@@ -18,19 +18,19 @@ type Processor struct {
 	logger *rsLogger
 }
 
-type ProcessorList struct {
+type ProcList struct {
 	list.List
 }
 
-func newProcessorList() *ProcessorList {
-	return &ProcessorList{list.List{}}
+func newProcList() *ProcList {
+	return &ProcList{list.List{}}
 }
 
-// newProcessor
+// newProc
 // Build a new r session
 // Auto load nameFunc.R
 // In this file, we can write some init code
-func newProcessor(name string) *Processor {
+func newProc(name string) *Proc {
 	log.Println("Create new process")
 	cmd := exec.Command("R", "--vanilla")
 
@@ -41,7 +41,7 @@ func newProcessor(name string) *Processor {
 	}
 
 	id, _ := gonanoid.New()
-	logger := newProcessorLogger(name, id)
+	logger := newProcLogger(name, id)
 	// redirect log to file
 	cmd.Stdout = logger
 	cmd.Stderr = logger
@@ -52,7 +52,7 @@ func newProcessor(name string) *Processor {
 		return nil
 	}
 
-	proc := &Processor{
+	proc := &Proc{
 		id:     id,
 		name:   name,
 		cmd:    cmd,
@@ -69,7 +69,7 @@ func newProcessor(name string) *Processor {
 	defer ProcMap.lock.Unlock()
 
 	if ProcMap.m[name] == nil {
-		ProcMap.m[name] = newProcessorList()
+		ProcMap.m[name] = newProcList()
 	}
 
 	ProcMap.m[name].PushBack(proc)
@@ -77,12 +77,12 @@ func newProcessor(name string) *Processor {
 }
 
 // ForceClose This method will directly kill the process
-func (p *Processor) ForceClose() error {
+func (p *Proc) ForceClose() error {
 	return p.cmd.Process.Kill()
 }
 
 // QuitR This method will wait for the current task to complete before exiting
-func (p *Processor) QuitR() error {
+func (p *Proc) QuitR() error {
 	_, err := p.Exec("q()")
 	return err
 }
@@ -90,7 +90,7 @@ func (p *Processor) QuitR() error {
 // Exec
 // This func will automatically add \n at the end
 // Please ensure exec one line
-func (p *Processor) Exec(format string, a ...any) (i int, err error) {
+func (p *Proc) Exec(format string, a ...any) (i int, err error) {
 	defer func() {
 		// log failed code
 		if err != nil {

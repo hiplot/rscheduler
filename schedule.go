@@ -7,7 +7,7 @@ import (
 
 type procMap struct {
 	lock   sync.RWMutex
-	m      map[string]*ProcessorList
+	m      map[string]*ProcList
 	logger *rsLogger
 }
 
@@ -15,13 +15,13 @@ var ProcMap procMap
 
 func init() {
 	ProcMap = procMap{
-		m:      make(map[string]*ProcessorList),
+		m:      make(map[string]*ProcList),
 		logger: newGlobalLogger(),
 	}
 }
 
-func (p *procMap) AddTask(t *Task) {
-	proc := p.getProc(t)
+func (pm *procMap) AddTask(t *Task) {
+	proc := pm.getProc(t)
 	if proc == nil {
 		panic("get proc failed")
 	}
@@ -29,40 +29,40 @@ func (p *procMap) AddTask(t *Task) {
 	_, err = proc.Exec(`taskID = "%s"`, t.id)
 	_, err = proc.Exec(`source("./rscript/%s.R")`, t.name)
 	if err != nil {
-		p.logger.Errorf("Exec failed: ")
+		pm.logger.Errorf("Exec failed: ")
 		return
 	}
 }
 
-func (p *procMap) TaskComplete(taskName, taskID string) {
+func (pm *procMap) TaskComplete(taskName, taskID string) {
 	// TODO collect result
-	p.lock.Lock()
-	defer p.lock.Unlock()
-	pList := p.m[taskName]
+	pm.lock.Lock()
+	defer pm.lock.Unlock()
+	pList := pm.m[taskName]
 	for i := pList.Back(); i != nil; i = i.Prev() {
-		proc := i.Value.(*Processor)
+		proc := i.Value.(*Proc)
 		if proc.task != nil && proc.task.id == taskID {
-			p.logger.Infow("Task complete success", zap.String("taskName", taskName), zap.String("taskID", taskID))
+			pm.logger.Infow("Task complete success", zap.String("taskName", taskName), zap.String("taskID", taskID))
 			proc.task = nil
 			return
 		}
 	}
 }
 
-func (p *procMap) getProc(t *Task) *Processor {
-	p.lock.Lock()
-	defer p.lock.Unlock()
-	pList := p.m[t.name]
+func (pm *procMap) getProc(t *Task) *Proc {
+	pm.lock.Lock()
+	defer pm.lock.Unlock()
+	pList := pm.m[t.name]
 	if pList == nil || pList.Len() == 0 {
-		proc := p.makeNewProc(t.name)
+		proc := pm.makeNewProc(t.name)
 		proc.task = t
 		return proc
 	}
 
 	for procElement := pList.Front(); procElement != nil; procElement = procElement.Next() {
-		proc := procElement.Value.(*Processor)
+		proc := procElement.Value.(*Proc)
 		if proc != nil && proc.task == nil {
-			p.logger.Infow("Find a idle processor", zap.String("taskName", t.name), zap.String("taskID", t.id))
+			pm.logger.Infow("Find a idle processor", zap.String("taskName", t.name), zap.String("taskID", t.id))
 			proc.task = t
 			// put the procElement to the end of list
 			pList.MoveToBack(procElement)
@@ -71,14 +71,14 @@ func (p *procMap) getProc(t *Task) *Processor {
 	}
 
 	// TODO limit processor count
-	proc := p.makeNewProc(t.name)
+	proc := pm.makeNewProc(t.name)
 	proc.task = t
 	return proc
 }
 
 // This func is in order to reduce lock granularity
-func (p *procMap) makeNewProc(name string) *Processor {
-	p.lock.Unlock()
-	defer p.lock.Lock()
-	return newProcessor(name)
+func (pm *procMap) makeNewProc(name string) *Proc {
+	pm.lock.Unlock()
+	defer pm.lock.Lock()
+	return newProc(name)
 }

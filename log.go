@@ -20,7 +20,7 @@ type rsLogger struct {
 	*os.File
 }
 
-func newProcessorLogger(name, id string) *rsLogger {
+func newProcLogger(name, id string) *rsLogger {
 	return newLogger(ProcessorLog, name, id)
 }
 
