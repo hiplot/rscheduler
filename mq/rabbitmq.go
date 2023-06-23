@@ -39,20 +39,25 @@ func (r *rabbitMQ) Get() ([]byte, error) {
 		}
 	}(channel)
 
+	// Get a task from rabbitmq
 	cfg := config.Config.RabbitMQ
 	for {
 		d, ok, err := channel.Get(cfg.TaskQueueName, false)
 		if err != nil {
 			return nil, err
 		}
+
 		if ok {
 			global.Logger.Info("Get a new task from rabbitmq")
+			// Ack the task
 			err = d.Ack(false)
 			if err != nil {
 				global.Logger.Error("Ack task failed, err: " + err.Error())
 			}
 			return d.Body, nil
 		}
+
+		// if not ok, try again after 1 second
 		time.Sleep(time.Second)
 	}
 }

@@ -61,6 +61,7 @@ func newProc(name string) *Proc {
 		logger: logger,
 	}
 
+	// load init file
 	_, err = proc.Exec(`source("./rscript/%sInit.R")`, name)
 	if err != nil {
 		global.Logger.Error("Exec failed, err: ", err)
@@ -68,6 +69,7 @@ func newProc(name string) *Proc {
 		return nil
 	}
 
+	// push processor into scheduler
 	RScheduler.lock.Lock()
 	defer RScheduler.lock.Unlock()
 

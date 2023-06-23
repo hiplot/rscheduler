@@ -17,32 +17,39 @@ type rScheduler struct {
 func (rs *rScheduler) Start() {
 	go func() {
 		for {
-			if EnableNewTask() {
-				delivery, err := mq.RabbitMQ.Get()
-				if err != nil {
-					global.Logger.Error("get delivery failed, err:", err)
-					time.Sleep(time.Second) // prevent dead loop
-					continue
-				}
-				t := NewTask(delivery)
-				if t == nil {
-					continue
-				}
-				err = rs.AddTask(t)
-				if err != nil {
-					global.Logger.Error("add task failed, err:", err)
-				}
+			if !EnableNewTask() {
+				time.Sleep(time.Second) // prevent dead loop
+				continue
+			}
+			// get a new task from rabbitmq
+			taskDetail, err := mq.RabbitMQ.Get()
+			if err != nil {
+				global.Logger.Error("get delivery failed, err:", err)
+				time.Sleep(time.Second) // prevent dead loop
+				continue
+			}
+			// decode and pack task
+			t := NewTask(taskDetail)
+			if t == nil {
+				continue
+			}
+			// add task to scheduler
+			err = rs.AddTask(t)
+			if err != nil {
+				global.Logger.Error("add task failed, err:", err)
 			}
 		}
 	}()
 }
 
 func (rs *rScheduler) AddTask(t *Task) error {
+	// bind task with processor
 	proc := rs.getProc(t)
 	if proc == nil {
 		global.Logger.Error("get a nil processor, please check")
 		return fmt.Errorf("get a nil processor, please check")
 	}
+	// do task
 	var err error
 	_, err = proc.Exec(`taskID = "%s"`, t.ID)
 	_, err = proc.Exec(`source("./rscript/%s.R")`, t.Name)
@@ -76,7 +83,9 @@ func (rs *rScheduler) TaskComplete(taskName, taskID string, kill bool) {
 func (rs *rScheduler) getProc(t *Task) *Proc {
 	rs.lock.Lock()
 	defer rs.lock.Unlock()
+
 	pList := rs.M[t.Name]
+
 	// create new pList and processor
 	if pList == nil || pList.Len() == 0 {
 		proc := rs.makeNewProc(t.Name)
