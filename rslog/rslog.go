@@ -1,4 +1,4 @@
-package main
+package rslog
 
 import (
 	"go.uber.org/zap"
@@ -14,20 +14,20 @@ const (
 	GlobalLog    = "global"
 )
 
-type rsLogger struct {
+type RsLogger struct {
 	*zap.SugaredLogger
 	*os.File
 }
 
-func newProcLogger(name, id string) *rsLogger {
+func NewProcLogger(name, id string) *RsLogger {
 	return newLogger(ProcessorLog, name, id)
 }
 
-func newGlobalLogger() *rsLogger {
+func NewGlobalLogger() *RsLogger {
 	return newLogger(GlobalLog, "", "global")
 }
 
-func newLogger(kind, name, id string) *rsLogger {
+func newLogger(kind, name, id string) *RsLogger {
 	encoder := getEncoder()
 	writeSyncer, file, err := getWriteSyncer(kind, name, id)
 	var core zapcore.Core
@@ -39,7 +39,7 @@ func newLogger(kind, name, id string) *rsLogger {
 	}
 	core = zapcore.NewCore(encoder, writeSyncer, zap.DebugLevel)
 	log := zap.New(core)
-	return &rsLogger{log.Sugar(), file}
+	return &RsLogger{log.Sugar(), file}
 }
 
 func getEncoder() zapcore.Encoder {

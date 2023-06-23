@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"container/list"
@@ -6,6 +6,8 @@ import (
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"io"
 	"os/exec"
+	"rscheduler/global"
+	"rscheduler/rslog"
 )
 
 type Proc struct {
@@ -14,7 +16,7 @@ type Proc struct {
 	cmd    *exec.Cmd
 	inPipe *io.WriteCloser
 	task   *Task
-	logger *rsLogger
+	logger *rslog.RsLogger
 }
 
 type ProcList struct {
@@ -30,24 +32,24 @@ func newProcList() *ProcList {
 // Auto load nameFunc.R
 // In this file, we can write some init code
 func newProc(name string) *Proc {
-	Logger.Info("Create new processor")
+	global.Logger.Info("Create new processor")
 	cmd := exec.Command("R", "--vanilla")
 
 	stdinPipe, err := cmd.StdinPipe()
 	if err != nil {
-		Logger.Error("get stdinPipe failed, err:", err)
+		global.Logger.Error("get stdinPipe failed, err:", err)
 		return nil
 	}
 
 	id, _ := gonanoid.New()
-	logger := newProcLogger(name, id)
+	logger := rslog.NewProcLogger(name, id)
 	// redirect log to file
 	cmd.Stdout = logger
 	cmd.Stderr = logger
 
 	err = cmd.Start()
 	if err != nil {
-		Logger.Error("start cmd failed, err:", err)
+		global.Logger.Error("start cmd failed, err:", err)
 		return nil
 	}
 
@@ -61,19 +63,19 @@ func newProc(name string) *Proc {
 
 	_, err = proc.Exec(`source("./rscript/%sInit.R")`, name)
 	if err != nil {
-		Logger.Error("Exec failed, err: ", err)
+		global.Logger.Error("Exec failed, err: ", err)
 		_ = proc.ForceClose()
 		return nil
 	}
 
-	ProcMap.lock.Lock()
-	defer ProcMap.lock.Unlock()
+	RScheduler.lock.Lock()
+	defer RScheduler.lock.Unlock()
 
-	if ProcMap.m[name] == nil {
-		ProcMap.m[name] = newProcList()
+	if RScheduler.M[name] == nil {
+		RScheduler.M[name] = newProcList()
 	}
 
-	ProcMap.m[name].PushBack(proc)
+	RScheduler.M[name].PushBack(proc)
 	return proc
 }
 

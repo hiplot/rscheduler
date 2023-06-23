@@ -4,9 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/liang09255/lutils/conv"
 	"net/http"
+	"rscheduler/config"
+	"rscheduler/core"
+	"rscheduler/global"
+	"rscheduler/mq"
 )
 
 func main() {
+	global.Init()
+	config.Init()
+	mq.RabbitMQInit()
+	core.Init()
+
 	g := gin.Default()
 	g.GET("/completed", TaskCompleteHandler)
 	g.GET("/newTask", NewTaskHandler)
@@ -22,15 +31,15 @@ func TaskCompleteHandler(c *gin.Context) {
 	taskName := c.Query("taskName")
 	taskID := c.Query("taskID")
 	kill := conv.ToBool(c.Query("kill"))
-	ProcMap.TaskComplete(taskName, taskID, kill)
+	core.RScheduler.TaskComplete(taskName, taskID, kill)
 	c.JSON(http.StatusOK, "Success")
 }
 
 func NewTaskHandler(c *gin.Context) {
 	taskName := c.Query("taskName")
-	task := NewTask(taskName)
+	task := core.NewTask(taskName)
 
-	if !enableNewTask() {
+	if !core.EnableNewTask() {
 		c.JSON(http.StatusOK, gin.H{
 			"status": FailedResponseCode,
 			"msg":    "limit",
@@ -38,7 +47,7 @@ func NewTaskHandler(c *gin.Context) {
 		return
 	}
 
-	err := ProcMap.AddTask(task)
+	err := core.RScheduler.AddTask(task)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": FailedResponseCode,

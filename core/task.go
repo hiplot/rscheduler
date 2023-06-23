@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	gonanoid "github.com/matoous/go-nanoid/v2"

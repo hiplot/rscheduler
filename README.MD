@@ -1,8 +1,8 @@
-# rschedule：hiplot任务调度优化解决方案
+# rscheduler：hiplot任务调度优化解决方案
 
 计划在hiplotlib基础之上搭建一层会话管理层，目前为出生刚满一天的demo
 
-工作流由原先的` 前端提交任务->后端处理->hiplotlib执行` 改为`前端提交任务->后端处理->rschedule任务调度->hiplotlib执行` 
+工作流由原先的` 前端提交任务->后端处理->hiplotlib执行` 改为`前端提交任务->后端处理->rscheduler任务调度->hiplotlib执行` 
 
 主要优化点有：
 
