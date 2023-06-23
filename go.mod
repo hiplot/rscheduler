@@ -6,7 +6,9 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/liang09255/lutils/conv v0.0.0-20230616165032-56b236a29e66
 	github.com/matoous/go-nanoid/v2 v2.0.0
+	github.com/rabbitmq/amqp091-go v1.8.1
 	github.com/shirou/gopsutil/v3 v3.23.5
+	github.com/spf13/viper v1.16.0
 	go.uber.org/zap v1.24.0
 )
 
@@ -33,13 +35,11 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
-	github.com/rabbitmq/amqp091-go v1.8.1 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.16.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect

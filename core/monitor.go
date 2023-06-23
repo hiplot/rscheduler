@@ -3,22 +3,21 @@ package core
 import (
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
+	"rscheduler/config"
 	"rscheduler/global"
 	"time"
 )
 
-const (
-	AllowMaxCPUPercent    = 90
-	AllowMaxMemoryPercent = 80
-)
+var cpuPercent int
+var memPercent int
 
-func init() {
+func InitMonitor() {
 	go func() {
 		for {
-			getMemInfo()
-			getCPUInfo()
+			getMemInfo() // no block
+			getCPUInfo() // block 1s
 			if !EnableNewTask() {
-				// TODO GC procMap
+				// TODO Try to gc RScheduler
 			}
 		}
 	}()
@@ -30,21 +29,23 @@ func getMemInfo() {
 		global.Logger.Error("get memory use failed, err: ", err)
 		return
 	}
-	MemPercent = int(vm.UsedPercent)
+	memPercent = int(vm.UsedPercent)
 }
 
 func getCPUInfo() {
 	// TODO check it is adapt linux
-	cpuPercent, err := cpu.Percent(time.Second, false)
+	// This Method will spend 1s
+	nowCPUPercent, err := cpu.Percent(time.Second, false)
 	if err != nil {
 		global.Logger.Error("get cpu use failed, err: ", err)
 		return
 	}
-	CPUPercent = int(cpuPercent[0])
+	cpuPercent = int(nowCPUPercent[0])
 }
 
 func EnableNewTask() bool {
-	if MemPercent > AllowMaxMemoryPercent || CPUPercent > AllowMaxCPUPercent {
+	cfg := config.Config.TaskLimit
+	if memPercent > cfg.MaxMem || cpuPercent > cfg.MaxCPU {
 		return false
 	}
 	return true

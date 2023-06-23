@@ -1,22 +1,26 @@
 package core
 
 import (
-	gonanoid "github.com/matoous/go-nanoid/v2"
+	"encoding/json"
+	"rscheduler/global"
 )
 
 type Task struct {
-	name string
-	id   string
+	Name string `json:"Name"`
+	ID   string `json:"ID"`
 	//logger *rsLogger
 }
 
-var DelayTask *ProcList // TODO store task
+func NewTask(b []byte) (t *Task) {
+	return decode(b)
+}
 
-func NewTask(name string) *Task {
-	id, _ := gonanoid.New()
-	return &Task{
-		name: name,
-		id:   id,
-		//logger: newTaskLogger(name, id),
+func decode(s []byte) *Task {
+	t := new(Task)
+	err := json.Unmarshal(s, t)
+	if err != nil {
+		global.Logger.Error("Decode task failed, err: " + err.Error())
+		return nil
 	}
+	return t
 }

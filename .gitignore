@@ -1,3 +1,4 @@
 /.idea
 /log
 /config/config.yaml
+/mq/rabbitmq_test.go
