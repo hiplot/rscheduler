@@ -6,6 +6,13 @@
 
 工作流由原先的` 前端提交任务->后端处理->plmber执行` 改为`前端提交任务->后端处理->消息队列<-rscheduler拉取任务->hicli执行` ，引入的消息队列解耦了后端逻辑与任务调度与执行逻辑，使`hiplotlib`得以水平拓展，大大提高任务处理效率，并且通过拉模式主动从消息队列中消费任务，可根据自身状态动态调整拉取任务数量，一定程度上防止了CPU负载过高和内存溢出
 
+## QuickStart
+
+1. 本地需要有部署rabbitMQ并在`config/config.yaml`中配置好url
+2. `go run main.go`启动rscheduler
+3. 配置并运行`mq/rabbitmq_test.go`模拟新任务的产生
+4. 查看结果及日志
+
 ## 代码实现
 
 在`rscheduler`代码实现中，有三个核心概念，`scheduler`、`processor`、`task`

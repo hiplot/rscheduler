@@ -1,0 +1,12 @@
+rabbitmq:
+  url: amqp://lxs:root@172.30.0.1:5672/
+  taskQueueName: common
+
+taskLimit:
+  maxCPU: 90 # 允许创建新Processor的最大CPU占用 0%-100%
+  maxMem: 90 # 允许创建新Processor的最大内存占用 0%-100%
+  maxBusyProcessor: 2 # 最大同时运行的Processor数量 可设置为CPU核心数
+  maxIdleProcessor: 20 # 最大空闲的Processor数量 会占用一定内存
+  maxBusyProcessorMem: 1024 # MB 一个运行Processor最大占用内存
+  maxIdleProcessorMem: 300 # MB 一个空闲Processor最大占用内存
+  taskTimeout: 300 # seconds 任务超时时间
