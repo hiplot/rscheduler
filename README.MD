@@ -22,11 +22,11 @@
 
 `rscheduler`的配置项从三个维度出发，分别对应上面的三个核心概念
 
-`scheduler`支持配置`maxCPU`允许创建新任务的最大CPU使用率和`maxMem`允许创建新任务的最大内存使用率，在达到最大内存使用率时，会自动触发`scheduler`的`gc`功能清除空闲的`processor`。另外还支持配置`maxBusyProcessor最大繁忙处理器数量`和`maxIdleProcessor最大空闲处理器数量`。
+* `scheduler`支持配置`maxCPU`允许创建新任务的最大CPU使用率和`maxMem`允许创建新任务的最大内存使用率，在达到最大内存使用率时，会自动触发`scheduler`的`gc`功能清除空闲的`processor`。另外还支持配置`maxBusyProcessor最大繁忙处理器数量`和`maxIdleProcessor最大空闲处理器数量`。
 
-`pocessor`支持配置`maxBusyProcessorMem繁忙处理器最大内存使用量`和`maxIdleProcessorMem空闲处理器最大内存使用量`，自动杀死超限任务，防止大型任务占用服务器所有资源，并且避免了会话长期复用累积的内存消耗问题
+* `pocessor`支持配置`maxBusyProcessorMem繁忙处理器最大内存使用量`和`maxIdleProcessorMem空闲处理器最大内存使用量`，自动杀死超限任务，防止大型任务占用服务器所有资源，并且避免了会话长期复用累积的内存消耗问题
 
-`task`支持配置`taskTimeout`任务超时时间，防止任务异常阻塞等情况的发生
+* `task`支持配置`taskTimeout`任务超时时间，防止任务异常阻塞等情况的发生
 
 ## 已实现功能
 
