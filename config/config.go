@@ -4,11 +4,16 @@ var Config = &configModel{}
 
 type configModel struct {
 	RabbitMQ struct {
-		URL           string `json:"url"`
-		TaskQueueName string `json:"taskQueueName"`
-	} `json:"rabbitmq"`
+		URL           string
+		TaskQueueName string
+	}
 	TaskLimit struct {
-		MaxCPU int `json:"maxCPU"`
-		MaxMem int `json:"maxMem"`
-	} `json:"taskLimit"`
+		MaxCPU              int
+		MaxMem              int
+		MaxBusyProcessor    int
+		MaxIdleProcessor    int
+		MaxBusyProcessorMem int
+		MaxIdleProcessorMem int
+		TaskTimeout         int
+	}
 }

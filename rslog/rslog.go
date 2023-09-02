@@ -3,6 +3,7 @@ package rslog
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -12,6 +13,7 @@ const (
 	SEP          = string(filepath.Separator)
 	ProcessorLog = "processor"
 	GlobalLog    = "global"
+	TaskLog      = "task"
 )
 
 type RsLogger struct {
@@ -27,23 +29,27 @@ func NewGlobalLogger() *RsLogger {
 	return newLogger(GlobalLog, "", "global")
 }
 
+func NewTaskLogger(name, id string) *RsLogger {
+	return newLogger(TaskLog, name, id)
+}
+
 func newLogger(kind, name, id string) *RsLogger {
 	encoder := getEncoder()
 	writeSyncer, file, err := getWriteSyncer(kind, name, id)
 	var core zapcore.Core
 	if err != nil {
-		// TODO 发送日志初始化失败通知
+		log.Println("get writeSyncer failed, err: ", err)
 		// 直接将日志打到控制台
 		writeSyncer = zapcore.AddSync(os.Stdout)
 		file = os.Stdout
 	}
 	core = zapcore.NewCore(encoder, writeSyncer, zap.DebugLevel)
-	log := zap.New(core)
-	return &RsLogger{log.Sugar(), file}
+	zapLogger := zap.New(core)
+	return &RsLogger{zapLogger.Sugar(), file}
 }
 
 func getEncoder() zapcore.Encoder {
-	return zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+	return zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
 }
 
 func getWriteSyncer(kind, name, id string) (zapcore.WriteSyncer, *os.File, error) {

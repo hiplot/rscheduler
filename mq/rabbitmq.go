@@ -2,6 +2,7 @@ package mq
 
 import (
 	amqp "github.com/rabbitmq/amqp091-go"
+	"log"
 	"rscheduler/config"
 	"rscheduler/global"
 	"time"
@@ -15,6 +16,7 @@ var RabbitMQ *rabbitMQ
 
 func Init() {
 	RabbitMQ = rabbitMQInit()
+	log.Println("消息队列初始化成功")
 }
 
 func rabbitMQInit() *rabbitMQ {
@@ -26,7 +28,7 @@ func rabbitMQInit() *rabbitMQ {
 }
 
 // Get it will get a task from rabbitmq
-// When the queue is empty, it will block and try again after 1 second
+// When the queue is empty, it will block and try again after
 func (r *rabbitMQ) Get() ([]byte, error) {
 	channel, err := r.conn.Channel()
 	if err != nil {
@@ -57,7 +59,7 @@ func (r *rabbitMQ) Get() ([]byte, error) {
 			return d.Body, nil
 		}
 
-		// if not ok, try again after 1 second
-		time.Sleep(time.Second)
+		// if not ok, try again after 100 ms
+		time.Sleep(100 * time.Millisecond)
 	}
 }

@@ -1,2 +1,2 @@
-cat(fib(40))
-callback(taskID, "fib")
+cat(fib(30))
+callback(taskID, "fib", 0)
