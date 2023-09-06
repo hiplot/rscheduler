@@ -46,11 +46,11 @@ func (t *Task) CommendList() []string {
 func (t *Task) StartLogger() {
 	go func() {
 		t.Logger.Infow("Start task logger", zap.Int("PID", t.PID))
+		ticker := time.NewTicker(100 * time.Millisecond)
 	LogLoop:
 		for {
-			ticker := time.Tick(100 * time.Millisecond)
 			select {
-			case <-ticker:
+			case <-ticker.C:
 				info := monitor.GetProcessInfo(t.PID)
 				if info == nil {
 					continue
