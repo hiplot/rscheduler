@@ -16,5 +16,5 @@ func (t taskAPI) TaskCompleteHandler(c *gin.Context) {
 	taskID := c.Query("taskID")
 	kill := conv.ToBool(c.Query("kill"))
 	scheduler.RScheduler.TaskComplete(taskName, taskID, kill)
-	c.JSON(http.StatusOK, "Success")
+	c.JSON(http.StatusOK, NewBaseSuccessResponse())
 }
