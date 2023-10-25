@@ -23,3 +23,12 @@ func NewBaseFailResponse() BaseResponse {
 		StatusMessage: "Fail",
 	}
 }
+
+type BaseInfoResponse struct {
+	BaseResponse
+	BaseInfo baseInfo `json:"base_info"`
+}
+
+type baseInfo struct {
+	Version string `json:"version"`
+}

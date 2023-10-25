@@ -12,5 +12,5 @@ func Start() {
 
 func initRouter(g *gin.Engine) {
 	g.GET("/completed", TaskAPI.TaskCompleteHandler)
-	g.GET("/base/info")
+	g.GET("/base/info", BaseAPI.Info)
 }
