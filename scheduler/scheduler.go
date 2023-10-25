@@ -16,7 +16,7 @@ import (
 )
 
 type rScheduler struct {
-	lock        sync.RWMutex
+	Lock        sync.RWMutex
 	M           map[string]*processor.ProcList
 	BusyProcNum int
 	IdleProcNum int
@@ -65,15 +65,15 @@ func (rs *rScheduler) RunTask(t *task.Task) error {
 
 // TaskComplete This method will be called when the task is completed
 func (rs *rScheduler) TaskComplete(taskName, taskID string, kill bool) {
-	rs.lock.Lock()
+	rs.Lock.Lock()
 	defer func() {
 		// update processor num
 		if !kill {
 			rs.IdleProcNum++
 		}
 		rs.BusyProcNum--
-		// release lock
-		rs.lock.Unlock()
+		// release Lock
+		rs.Lock.Unlock()
 	}()
 
 	pList := rs.M[taskName]
@@ -96,7 +96,7 @@ func (rs *rScheduler) TaskComplete(taskName, taskID string, kill bool) {
 
 // bind task with processor
 func (rs *rScheduler) getProc(name string) (proc *processor.Proc) {
-	rs.lock.Lock()
+	rs.Lock.Lock()
 	defer func() {
 		if proc == nil {
 			global.Logger.Errorw("Get processor failed, processor is nil 1111", zap.String("taskName", name))
@@ -104,7 +104,7 @@ func (rs *rScheduler) getProc(name string) (proc *processor.Proc) {
 		}
 		proc.SetRun()
 		rs.BusyProcNum++
-		rs.lock.Unlock()
+		rs.Lock.Unlock()
 	}()
 
 	pList := rs.M[name]
@@ -139,7 +139,7 @@ func (rs *rScheduler) getProc(name string) (proc *processor.Proc) {
 
 // create a new processor
 func (rs *rScheduler) makeNewProc(name string) *processor.Proc {
-	rs.lock.Unlock()
+	rs.Lock.Unlock()
 	proc := processor.NewProc(name)
 	// push processor into scheduler
 	rs.addNewProc(proc)
@@ -148,7 +148,7 @@ func (rs *rScheduler) makeNewProc(name string) *processor.Proc {
 
 // push processor into scheduler
 func (rs *rScheduler) addNewProc(proc *processor.Proc) {
-	rs.lock.Lock()
+	rs.Lock.Lock()
 	if rs.M[proc.Name] == nil {
 		rs.M[proc.Name] = processor.NewProcList()
 	}

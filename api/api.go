@@ -13,4 +13,5 @@ func Start() {
 func initRouter(g *gin.Engine) {
 	g.GET("/completed", TaskAPI.TaskCompleteHandler)
 	g.GET("/base/info", BaseAPI.Info)
+	g.GET("/processor/info", ProcessorAPI.Info)
 }

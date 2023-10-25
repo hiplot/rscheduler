@@ -16,8 +16,8 @@ func startHealthCheck() {
 }
 
 func healthCheck() {
-	RScheduler.lock.Lock()
-	defer RScheduler.lock.Unlock()
+	RScheduler.Lock.Lock()
+	defer RScheduler.Lock.Unlock()
 	for _, procList := range RScheduler.M {
 		if procList == nil {
 			continue

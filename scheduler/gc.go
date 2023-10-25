@@ -26,8 +26,8 @@ func enableGC() {
 
 func gc() {
 	global.Logger.Infow("Start Scheduler GC")
-	RScheduler.lock.Lock()
-	defer RScheduler.lock.Unlock()
+	RScheduler.Lock.Lock()
+	defer RScheduler.Lock.Unlock()
 
 	startTime := time.Now()
 	for _, procList := range RScheduler.M {
