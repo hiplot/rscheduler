@@ -20,11 +20,12 @@ import (
 type Proc struct {
 	ID         string
 	Name       string
-	PID        int    // 进程id
-	TakNum     uint32 // 总执行任务数
-	InitialMem uint64 // 初始内存占用
-	NowMem     uint64 // 当前内存占用
-	Running    bool   // 是否正在运行
+	PID        int     // 进程id
+	TakNum     uint32  // 总执行任务数
+	InitialMem uint64  // 初始内存占用
+	NowMem     uint64  // 当前内存占用
+	NowCPU     float64 // 当前CPU占用
+	Running    bool    // 是否正在运行
 	CMD        *exec.Cmd
 	InPipe     *io.WriteCloser
 	Task       *task.Task
@@ -125,6 +126,7 @@ func (p *Proc) RefreshProcState() {
 		p.InitialMem = pi.RSS
 	}
 	p.NowMem = pi.RSS
+	p.NowCPU = pi.CpuUsage
 	pi.Recycle()
 }
 

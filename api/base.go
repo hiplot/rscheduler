@@ -12,8 +12,8 @@ type baseAPI struct {
 var BaseAPI = &baseAPI{}
 
 func (b baseAPI) Info(c *gin.Context) {
-	c.JSON(http.StatusOK, BaseInfoResponse{
-		BaseResponse: NewBaseSuccessResponse(),
-		BaseInfo:     baseInfo{Version: global.VERSION},
+	c.JSON(http.StatusOK, BaseInfoResp{
+		BaseResp: NewBaseSuccessResp(),
+		BaseInfo: baseInfo{Version: global.VERSION},
 	})
 }
