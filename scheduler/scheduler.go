@@ -82,7 +82,7 @@ func (rs *rScheduler) TaskComplete(taskName, taskID string, kill bool) {
 		if proc.Task != nil && proc.Task.ID == taskID {
 			proc.Complete()
 			// judge whether to kill the processor
-			if !rs.enableIdleProc() || !proc.MemCheck() {
+			if !rs.enableIdleProc() || !proc.MemCheck() || proc.PreDelete {
 				kill = true
 			}
 			if kill {

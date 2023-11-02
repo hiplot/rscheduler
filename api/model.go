@@ -62,3 +62,24 @@ type taskInfo struct {
 	StartAt     int64  `json:"start_at"`
 	RunTime     int64  `json:"run_time"`
 }
+
+type ProcessorDeleteReq struct {
+	ID    string `form:"id" binding:"required"`
+	Force bool   `form:"force"`
+}
+
+type ProcessorDeleteResp struct {
+	BaseResp
+	Success bool   `json:"success"`
+	Info    string `json:"info"`
+}
+
+type TaskDeleteReq struct {
+	ID string `form:"id" binding:"required"`
+}
+
+type TaskDeleteResp struct {
+	BaseResp
+	Success bool   `json:"success"`
+	Info    string `json:"info"`
+}

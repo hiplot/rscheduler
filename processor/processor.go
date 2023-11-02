@@ -26,6 +26,7 @@ type Proc struct {
 	NowMem     uint64  // 当前内存占用
 	NowCPU     float64 // 当前CPU占用
 	Running    bool    // 是否正在运行
+	PreDelete  bool    // 预删除标识
 	CMD        *exec.Cmd
 	InPipe     *io.WriteCloser
 	Task       *task.Task
@@ -83,6 +84,11 @@ func NewProc(name string) *Proc {
 		return nil
 	}
 	return proc
+}
+
+// SetPreDelete 设置预删除标识，二次请求取消标识
+func (p *Proc) SetPreDelete() {
+	p.PreDelete = !p.PreDelete
 }
 
 // ForceClose This method will directly kill the process

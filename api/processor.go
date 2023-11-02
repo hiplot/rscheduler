@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"rscheduler/pkg/utils"
@@ -14,6 +15,7 @@ type processorAPI struct {
 var ProcessorAPI = &processorAPI{}
 
 func (p processorAPI) Info(c *gin.Context) {
+	// TODO 后续重构，放在这边不太好
 	scheduler.RScheduler.Lock.RLock()
 	defer scheduler.RScheduler.Lock.RUnlock()
 
@@ -38,4 +40,35 @@ func (p processorAPI) Info(c *gin.Context) {
 		BaseResp:      NewBaseSuccessResp(),
 		ProcessorInfo: processorInfoList,
 	})
+}
+
+func (p processorAPI) Delete(c *gin.Context) {
+	var req ProcessorDeleteReq
+	if err := c.ShouldBindQuery(&req); err != nil {
+		failResp := ProcessorDeleteResp{
+			BaseResp: NewBaseFailResp(),
+			Success:  false,
+			Info:     err.Error(),
+		}
+		Response(c, failResp)
+		return
+	}
+
+	err := scheduler.KillProcByProcID(req.ID, req.Force)
+	if err != nil {
+		failResp := ProcessorDeleteResp{
+			BaseResp: NewBaseFailResp(),
+			Success:  false,
+			Info:     err.Error(),
+		}
+		Response(c, failResp)
+		return
+	}
+
+	successResp := ProcessorDeleteResp{
+		BaseResp: NewBaseSuccessResp(),
+		Success:  true,
+		Info:     fmt.Sprintf("Processor %s delete success", req.ID),
+	}
+	Response(c, successResp)
 }
