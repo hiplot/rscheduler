@@ -26,19 +26,19 @@ func NewBaseFailResp() BaseResp {
 
 type BaseInfoResp struct {
 	BaseResp
-	BaseInfo baseInfo `json:"base_info"`
+	BaseInfo BaseInfo `json:"base_info"`
 }
 
-type baseInfo struct {
+type BaseInfo struct {
 	Version string `json:"version"`
 }
 
 type ProcessorInfoResp struct {
 	BaseResp
-	ProcessorInfo []processorInfo `json:"processor_info"`
+	ProcessorInfo []ProcessorInfo `json:"processor_info"`
 }
 
-type processorInfo struct {
+type ProcessorInfo struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
 	PID          int    `json:"pid"`
@@ -49,10 +49,10 @@ type processorInfo struct {
 
 type TaskInfoResp struct {
 	BaseResp
-	TaskInfo []taskInfo `json:"task_info"`
+	TaskInfo []TaskInfo `json:"task_info"`
 }
 
-type taskInfo struct {
+type TaskInfo struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	ProcessorID string `json:"processor_id"`

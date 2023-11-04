@@ -15,7 +15,7 @@ var BaseAPI = &baseAPI{}
 func (b baseAPI) Info(c *gin.Context) {
 	c.JSON(http.StatusOK, BaseInfoResp{
 		BaseResp: NewBaseSuccessResp(),
-		BaseInfo: baseInfo{Version: getVersion()},
+		BaseInfo: BaseInfo{Version: getVersion()},
 	})
 }
 

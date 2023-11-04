@@ -19,12 +19,12 @@ func (p processorAPI) Info(c *gin.Context) {
 	scheduler.RScheduler.Lock.RLock()
 	defer scheduler.RScheduler.Lock.RUnlock()
 
-	processorInfoList := make([]processorInfo, 0)
+	processorInfoList := make([]ProcessorInfo, 0)
 
 	for _, procList := range scheduler.RScheduler.M {
 		for i := procList.Front(); i != nil; i = i.Next() {
 			proc := i.Value.(*processor.Proc)
-			procInfo := processorInfo{
+			procInfo := ProcessorInfo{
 				ID:           proc.ID,
 				Name:         proc.Name,
 				PID:          proc.PID,

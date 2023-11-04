@@ -28,7 +28,7 @@ func (t taskAPI) Info(c *gin.Context) {
 	scheduler.RScheduler.Lock.RLock()
 	defer scheduler.RScheduler.Lock.RUnlock()
 
-	taskInfoList := make([]taskInfo, 0)
+	taskInfoList := make([]TaskInfo, 0)
 
 	for _, procList := range scheduler.RScheduler.M {
 		for i := procList.Front(); i != nil; i = i.Next() {
@@ -41,7 +41,7 @@ func (t taskAPI) Info(c *gin.Context) {
 				global.Logger.Errorln("Proc have not task but status is running")
 				continue
 			}
-			tInfo := taskInfo{
+			tInfo := TaskInfo{
 				ID:          t.ID,
 				Name:        t.Name,
 				ProcessorID: proc.ID,
