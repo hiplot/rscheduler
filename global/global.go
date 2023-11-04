@@ -5,8 +5,6 @@ import (
 	"rscheduler/rslog"
 )
 
-const VERSION = "0.1.0"
-
 var Logger *rslog.RsLogger // global logger
 var GCChan chan struct{}   // 用于传递GC信号
 
