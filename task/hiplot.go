@@ -28,9 +28,8 @@ func NewHiPlotTask(b []byte) (t *Task) {
 }
 
 func (t *HiPlotTask) CommendList() []string {
-	commends := make([]string, 3)
-	commends[0] = `ifelse(grepl("rscript" ,getwd()), "", setwd("./rscript/"))  `
-	commends[1] = `taskID = "` + t.ID + `"`
-	commends[2] = fmt.Sprintf(`hiFunc("%s", "%s", "%s", "%s", "%s")`, t.InputFile, t.ConfFile, t.OutputFilePrefix, t.Tool, t.Module)
+	commends := make([]string, 2)
+	commends[0] = `taskID = "` + t.ID + `"`
+	commends[1] = fmt.Sprintf(`hiFunc("%s", "%s", "%s", "%s", "%s")`, t.InputFile, t.ConfFile, t.OutputFilePrefix, t.Tool, t.Module)
 	return commends
 }

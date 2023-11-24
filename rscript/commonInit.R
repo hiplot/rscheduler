@@ -1,4 +1,5 @@
 library(hiplotlib)
+setwd("./")
 source("./rscript/http.R")
 
 hiFunc <- function(inputFile = "", confFile = "", outputFilePrefix = "", tool = "", module = "") {
@@ -21,7 +22,7 @@ hiFunc <- function(inputFile = "", confFile = "", outputFilePrefix = "", tool = 
     module, tool, dirname(outputFilePrefix)))
   tb <- ""
 
-  script_dir <<- sprintf("../%s/", module)
+  script_dir <<- sprintf("../plugins-open/%s/", module)
   print(script_dir)
   options(hiplotlib.script_dir=script_dir)
   wd <- getwd()

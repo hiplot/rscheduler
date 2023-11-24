@@ -77,7 +77,8 @@ func NewProc(name string) *Proc {
 	}
 
 	// load init file
-	_, err = proc.Exec(`source("./rscript/%sInit.R")`, name)
+	scriptPath := "./rscript"
+	_, err = proc.Exec(`source("%s/%sInit.R")`, scriptPath, name)
 	if err != nil {
 		global.Logger.Error("Exec failed, err: ", err)
 		_ = proc.ForceClose()

@@ -22,7 +22,7 @@ type HiPlotTask struct {
 const (
 	queueName = "common"
 	url       = "amqp://lxs:root@172.30.0.1:5672/"
-	COUNT     = 4
+	COUNT     = 1
 )
 
 func TestPushMsg(t *testing.T) {
@@ -45,10 +45,10 @@ func TestPushMsg(t *testing.T) {
 	for i := 0; i < COUNT; i++ {
 		id, _ := gonanoid.New()
 		task := HiPlotTask{
-			InputFile:        "data.txt",
-			ConfFile:         "data.json",
-			OutputFilePrefix: "./plot/" + id,
-			Tool:             "interval_area_chart",
+			InputFile:        "/home/lxs/code/ospp/user/input/Ps3qMcfKcGp_uruEC1x-A/data.txt",
+			ConfFile:         "/home/lxs/code/ospp/user/input/Ps3qMcfKcGp_uruEC1x-A/data.json",
+			OutputFilePrefix: "/home/lxs/code/ospp/user/output/" + id,
+			Tool:             "interval-area-chart",
 			Module:           "basic",
 			ID:               id,
 			Name:             "common",
