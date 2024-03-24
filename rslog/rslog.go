@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -15,6 +16,8 @@ const (
 	GlobalLog    = "global"
 	TaskLog      = "task"
 )
+
+var once sync.Once
 
 type RsLogger struct {
 	*zap.SugaredLogger
@@ -55,6 +58,9 @@ func getEncoder() zapcore.Encoder {
 func getWriteSyncer(kind, name, id string) (zapcore.WriteSyncer, *os.File, error) {
 	now := time.Now().Format("2006-01-02")
 	Path, _ := os.Getwd()
+	once.Do(func() {
+		_ = os.Mkdir("./log", 0777)
+	})
 	LogPath := Path + SEP + "log" + SEP + now + SEP + kind + SEP + name
 	err := os.MkdirAll(LogPath, os.ModePerm)
 	if err != nil {

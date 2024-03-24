@@ -21,7 +21,7 @@ type HiPlotTask struct {
 
 const (
 	queueName = "common"
-	url       = "amqp://lxs:root@172.30.0.1:5672/"
+	url       = "amqp://lxs:root@192.168.1.4:5672/"
 	COUNT     = 1
 )
 
@@ -45,8 +45,8 @@ func TestPushMsg(t *testing.T) {
 	for i := 0; i < COUNT; i++ {
 		id, _ := gonanoid.New()
 		task := HiPlotTask{
-			InputFile:        "/home/lxs/code/ospp/user/input/Ps3qMcfKcGp_uruEC1x-A/data.txt",
-			ConfFile:         "/home/lxs/code/ospp/user/input/Ps3qMcfKcGp_uruEC1x-A/data.json",
+			InputFile:        "http://127.0.0.1:9000/hiplot-copilot/data.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=FNNRPZ94ZSRCOHKILP7W%2F20240324%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240324T153323Z&X-Amz-Expires=604800&X-Amz-Security-Token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiJGTk5SUFo5NFpTUkNPSEtJTFA3VyIsImV4cCI6MTcxMTI5ODYzMywicGFyZW50IjoibWluaW9hZG1pbiJ9.hV4F6OJMsia5C4wltzmMzIQp-jaDvrEY2VfIoEFR4-km1eDpoTFc8HkDa0v5RPvMz6LfroAty2UMbDcwo839VQ&X-Amz-SignedHeaders=host&versionId=null&X-Amz-Signature=08c6c9049547bb2fe0d9e4189715d7d9a9a1fc0cbab864ba6d0f4540e9a405c3",
+			ConfFile:         "http://127.0.0.1:9000/hiplot-copilot/data.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=FNNRPZ94ZSRCOHKILP7W%2F20240324%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240324T153846Z&X-Amz-Expires=604800&X-Amz-Security-Token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiJGTk5SUFo5NFpTUkNPSEtJTFA3VyIsImV4cCI6MTcxMTI5ODYzMywicGFyZW50IjoibWluaW9hZG1pbiJ9.hV4F6OJMsia5C4wltzmMzIQp-jaDvrEY2VfIoEFR4-km1eDpoTFc8HkDa0v5RPvMz6LfroAty2UMbDcwo839VQ&X-Amz-SignedHeaders=host&versionId=null&X-Amz-Signature=12d66f481c6f85b59b9dc428470322f9ba2ce0c1076dd6bc67a05afa3b267129",
 			OutputFilePrefix: "/home/lxs/code/ospp/user/output/" + id,
 			Tool:             "interval-area-chart",
 			Module:           "basic",
